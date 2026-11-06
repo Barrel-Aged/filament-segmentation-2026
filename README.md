@@ -1,121 +1,138 @@
-# Solar filament instance segmentation: filament-segmentation-2026
+# Solar filament segmentation for filament-segmentation-2026
 
-Code, trained weights and a demo notebook for team BarrelAged's entry in the Kaggle competition
-[filament-segmentation-2026](https://www.kaggle.com/competitions/filament-segmentation-2026): instance segmentation
-of solar filaments in GONG H-alpha full-disk images, scored by panoptic quality (PQ) pooled over annotators.
+This repository has the code, the trained models and a demo notebook behind my entry (team BarrelAged) in the Kaggle
+competition [filament-segmentation-2026](https://www.kaggle.com/competitions/filament-segmentation-2026). The task is
+to find each solar filament in GONG H-alpha images of the whole Sun and outline it as its own mask. Entries are
+scored by panoptic quality (PQ): a predicted mask only counts if it overlaps an annotator's drawing of the same
+filament by more than half (IoU > 0.5).
 
-The evaluated submission is `s1-S-t024.csv` (Kaggle public score 0.41). This repository rebuilds it from the test
-images.
+My evaluated submission is `s1-S-t024.csv`, which scored 0.41 on the public leaderboard. The code here rebuilds it
+from the test images.
 
-## The pipeline
+## How it works
 
-Stages 2-4 propose candidate filament masks, stages 5-6 score every candidate, and stages 7-9 pick a conflict-free
-set and write it. Inference reads only the test H-alpha images.
+I started with the obvious approach: a U-Net that paints a probability map of "filament or not", then a threshold,
+with each connected blob taken as one filament. That scored 0.383 on my development images. It breaks in a
+predictable way. A single threshold either merges neighboring filaments into one blob or splits a long filament into
+pieces, and the annotators often disagree about where a filament ends. Either way the masks miss the IoU > 0.5 bar.
 
-| # | stage | module | device |
+So I stopped picking one threshold. The pipeline makes many candidate masks for each image (every blob at every
+threshold level, plus merges of nearby blobs), a trained model predicts how well each candidate will match the
+annotators, and the code then picks the best set of candidates that don't overlap. That alone took the development
+score to 0.438. From there I gave the scorer more evidence about each candidate, namely what several other models
+think of it, and refined how the final set is chosen. The final model scores 0.4706 on the development images.
+
+Inference only reads the test H-alpha images. These are the steps, in the order the code runs them:
+
+| # | What the step does | Module | Runs on |
 |---|---|---|---|
-| 1 | read the 180 test images | `filseg/data.py` | CPU |
-| 2 | dense probability maps: three U-Nets (ConvNeXt-T, a longer-trained ConvNeXt-T, ResNet34), 4 fold models each, averaged | `filseg/dense.py` | GPU (CPU possible) |
-| 3 | detector candidates: Mask R-CNN, 4 fold models | `filseg/det.py` | GPU (CPU possible) |
-| 4 | learned-ROI detector + refiner candidates (Codex I6; see Credits) | `filseg/i6.py` | GPU (CPU possible) |
-| 5 | candidate masks (threshold component trees plus merges) and 86 evidence columns per candidate | `filseg/evidence.py`, `filseg/rows.py` | CPU |
-| 6 | expected IoU of each candidate: q = 0.7 × mean of 10 LightGBM + 0.3 × mean of 10 ExtraTrees | `filseg/score.py` | CPU |
-| 7 | exact selection: per image, the non-overlapping set maximising Σ(s − τ), s = q − 0.2·\|t − 0.475\| − 0.03·[not a cnx tree node], τ = 0.24 (integer program, HiGHS) | `filseg/select.py` | CPU |
-| 8 | 0.23 px sub-pixel shift toward row 0 of tree and U-Net masks, then pixel claiming in descending s | `filseg/shift.py` | CPU |
-| 9 | column-major COCO RLE CSV | `filseg/write.py`, `filseg/submit.py` | CPU |
-| 10 | submission checks and the PQ metric | `filseg/validate.py`, `filseg/metrics.py` | CPU |
+| 1 | Reads the 180 test images. | `filseg/data.py` | CPU |
+| 2 | Three U-Nets (ConvNeXt-T, a longer-trained ConvNeXt-T and ResNet34) each make a probability map. Each U-Net has 4 copies, one per training fold, and their maps are averaged. | `filseg/dense.py` | GPU, or CPU |
+| 3 | A Mask R-CNN detector, also 4 fold copies, proposes filament masks of its own. | `filseg/det.py` | GPU, or CPU |
+| 4 | A second detector (I6) finds filament regions and a small network refines their masks. | `filseg/i6.py` | GPU, or CPU |
+| 5 | The code builds the candidate masks from the U-Net maps and describes each one with 86 numbers ("evidence"): its shape, its brightness, and how well it agrees with the other maps and detectors. | `filseg/evidence.py`, `filseg/rows.py` | CPU |
+| 6 | Ten LightGBM models and ten ExtraTrees models predict each candidate's expected IoU with the annotators. The score is 0.7 × the LightGBM average + 0.3 × the ExtraTrees average. | `filseg/score.py` | CPU |
+| 7 | For each image, an exact integer program picks the set of non-overlapping candidates with the highest total score. Each candidate's score is first adjusted: s = q − 0.2·\|t − 0.475\| − 0.03 for candidates that aren't plain blobs of the main map, where q is the predicted IoU and t the candidate's threshold level. Only candidates with s above τ = 0.24 can be picked. | `filseg/select.py` | CPU |
+| 8 | Each picked blob moves 0.23 pixels toward the top of the image, where the annotators' drawings sit on average (merged candidates stay as they are). Where two masks then touch, the higher-scoring one keeps the pixels. | `filseg/shift.py` | CPU |
+| 9 | The code writes the masks to the submission CSV in the competition's format (COCO run-length encoding). | `filseg/write.py`, `filseg/submit.py` | CPU |
+| 10 | The code checks the CSV and can score predictions with a copy of the competition metric. | `filseg/validate.py`, `filseg/metrics.py` | CPU |
+
+The technical report explains why each step is there and what it adds, with numbers.
 
 ## Quick start
 
-1. Python 3.10. `pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu128`
-2. Download the competition data from Kaggle and unzip it. Point `FILSEG_DATA` at the folder that holds
-   `test/test_images` (default: `data/MAGFiLO_1.0_Kaggle_2026` inside this repository).
-3. Open `demo.ipynb` and run it top to bottom. Intermediate files go to `FILSEG_WORK` (default `work/`).
+1. Use Python 3.10 and install the packages:
+   `pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu128`
+2. Download the competition data from Kaggle and unzip it. Set `FILSEG_DATA` to the folder that holds
+   `test/test_images`. If you don't set it, the code looks in `data/MAGFiLO_1.0_Kaggle_2026` inside this repository.
+3. Open `demo.ipynb` and run it from top to bottom. Intermediate files go to `FILSEG_WORK` (by default, `work/`).
 
-No other download is needed: the weights are in `weights/`, and no pretrained backbone is fetched at inference.
+You don't need to download anything else. The trained models are in `weights/`, and nothing is fetched from the
+internet at inference time.
 
-## Reproducibility
+## Reproducing the submission
 
-- **Replay mode (exact).** `replay/` holds the stage 2-4 outputs of the run that produced the submission (98 MB,
-  every file sha256-checked on unpacking). With replay on, the notebook runs stages 5-10 on them and writes a file
-  byte-identical to the submitted `s1-S-t024.csv` (sha256 `18bf87d6…74cd4`), on CPU, in about 20 minutes (4 processes).
-- **Full mode (from the images).** Stages 2-4 run on your GPU. GPUs differ slightly in floating-point arithmetic and
-  the U-Nets and I6 run in bfloat16, so the result is a close copy rather than the same bytes. On an RTX 3070 Ti,
-  1,203 of the 1,206 submitted instances were matched at IoU > 0.5, 910 of them pixel-identical; 3 instances were
-  missing and 5 new. The ResNet34 maps, originally computed on that same GPU, reproduced bit for bit.
-  `tools/compare_csv.py` compares your output with the submitted file.
-- **Stage checks.** `tools/verify_*.py` compare each stage with the original run's stored outputs.
+The notebook has two modes.
 
-## Hardware and runtime
+- **Replay mode (the default) rebuilds the submitted file exactly.** The `replay/` folder holds the outputs of steps
+  2-4 from the run that produced my submission (98 MB). The notebook checks every file's hash, runs steps 5-10 on
+  them and writes a CSV that is byte-for-byte identical to `submission/s1-S-t024.csv`. This needs only a CPU and
+  takes about 20 minutes.
+- **Full mode runs every step from the test images.** Steps 2-4 then run on your own GPU. Different GPUs do
+  floating-point math slightly differently, and the U-Nets and I6 run in reduced precision (bfloat16), so you get a
+  very close copy rather than the same bytes. When I ran full mode on an RTX 3070 Ti, 1,203 of the 1,206 submitted
+  masks were matched at IoU > 0.5, and 910 of those were pixel-identical. Three masks were missing and five were new.
+  The ResNet34 maps, which were originally made on that same GPU, came out bit-for-bit identical.
+  `tools/compare_csv.py` compares your file with the submitted one.
 
-Full mode on one RTX 3070 Ti (8 GB) and a 20-thread CPU took about 75 minutes:
+`tools/verify_*.py` check each step against the stored outputs of the original run.
 
-| stage | time |
+## Hardware and run time
+
+Full mode took about 75 minutes on one RTX 3070 Ti (8 GB) with a 20-thread CPU:
+
+| Step | Time |
 |---|---|
-| images | 14 s |
+| Reading the images | 14 s |
 | U-Net maps (cnx, cnxL, R34) | 675 + 659 + 395 s |
 | Mask R-CNN, 4 folds | 1,154 s |
 | I6 | 656 s |
-| evidence and candidate rows (4 processes) | 754 s |
-| scoring and selection | 21 s |
-| shift and CSV writing | 152 s |
+| Candidates and evidence (4 processes) | 754 s |
+| Scoring and selection | 21 s |
+| Shift and CSV writing | 152 s |
 
 ## Training
 
-`training/` holds the training entry points (`prep_train.py`, `train_dense.py`, `train_det.py`), and `configs/` holds
-the arguments of every trained run. The notebook's training section is optional and off by default; it loads the
-stored weights. The networks were trained on dev folds 0-3 (the folds are fixed groups of UTC observation days); see
-the technical report for the split, the scorer's training data and every parameter.
+`training/` has the training scripts (`prep_train.py`, `train_dense.py`, `train_det.py`), and `configs/` has the
+settings of every trained model. The notebook's training section is off by default, so the notebook loads the stored
+models. All the networks were trained on development folds 0-3. The folds are fixed groups of observation days, so
+images taken on the same day never end up in different folds. The technical report gives the split and every
+parameter.
 
-`training/scorer_data/` holds the two tables the stage-6 scorer was fit on (LightGBM: 707 images, ExtraTrees: 566;
-see its README). `filseg.train.fit_scorers()` refits the 10 + 10 models from them on the CPU in a few minutes; the
-refit LightGBM files are byte-identical to the shipped ones. The code that builds these tables from the out-of-fold
-maps is not part of this release.
+`training/scorer_data/` holds the two tables that the step-6 scorers were trained on (707 images for LightGBM, 566
+for ExtraTrees; see its README). `filseg.train.fit_scorers()` retrains all 20 scorer models from them on a CPU in a
+few minutes, and the retrained LightGBM files come out byte-identical to the shipped ones. The code that builds these
+tables from the networks' out-of-fold maps isn't part of this release.
 
-## Repository layout
+## What's in the repository
 
 ```
-filseg/     the pipeline, one module per stage
-training/   training entry points; scorer_data/ holds the scorer's training tables
-configs/    run arguments and the data split
-weights/    38 model files split into parts under 95 MB (weights/manifest.json; filseg/weights.py rejoins them)
-replay/     the original run's stage 2-4 outputs, for replay mode
-tools/      verification and packaging scripts
+filseg/     the pipeline, one module per step
+training/   training scripts; scorer_data/ holds the scorers' training tables
+configs/    settings of every trained model, and the data split
+weights/    the 38 trained model files, split into parts under 95 MB (filseg/weights.py joins them back)
+replay/     the original run's step 2-4 outputs, for replay mode
+tools/      checking and packaging scripts
 submission/ the submitted s1-S-t024.csv, for comparison
-demo.ipynb  the end-to-end demo (one call per stage to filseg/pipeline.py)
+demo.ipynb  the end-to-end demo
 ```
 
-## Licences and data
+## License and data
 
-- The code in this repository is released under the Apache License 2.0 (`LICENSE`).
-- The competition data are used under the competition's data terms, for non-commercial and academic use. This
-  repository does not redistribute the images or annotations. `replay/`, the trained weights and
-  `training/scorer_data/` are derived from them.
-- Third-party libraries keep their own licences (see `requirements.txt`).
+- The code is released under the Apache License 2.0 (see `LICENSE`).
+- I used the competition data under the competition's terms, which allow non-commercial and academic use. This
+  repository doesn't include the images or annotations. The trained models, `replay/` and `training/scorer_data/`
+  are derived from them.
+- The third-party libraries keep their own licenses (see `requirements.txt`).
 
 ## Credits
 
-- Stage 4 (`filseg/i6.py`) is a trimmed copy of the I6 model built in this project's earlier Codex track; the module
-  docstring lists the files it came from.
 - Data: the MAGFiLO dataset and the GONG network of the U.S. National Solar Observatory.
+- Step 4's I6 model was built by Codex, an AI coding agent I used earlier in the project. `filseg/i6.py` is a trimmed
+  copy of that code, and its docstring lists the original files.
 
 <!-- OWNER TO DO: the exact citations from the report template. -->
 
-## How this project used AI tools
+## How I used AI tools
 
-This project was built with AI coding agents, as the competition rules allow (Rules §2.8.a.1(b)).
-- **What the agents did.**
-  - OpenAI Codex (2026-10-14 to 11-01) built the first track: the data split, the metric replica, the early models
-    and the I6 detector used in stage 4.
-  - Claude, through Claude Code (from 2026-10-29), built the dense U-Nets, the detector, the candidate scorer, the
-    selection rule and this release.
-  - In both tracks the agents wrote the code, ran the experiments, kept the experiment records, and separate
-    agents checked the work against those records.
-- **What the team decided.** The team member approved the compute and data use, made the adoption decisions put to
-  them (for example, adopting the B3f decision rule after its pre-registered primary arm failed), chose
-  every Kaggle submission and the final, ruled on the judgement calls (for example, keeping the 0.23 px shift), and
-  chose how this release is reproduced and checked.
-- **How the results were checked.** Each stage of this release was compared with the stored outputs of the run that
-  produced the submission (`tools/verify_*.py`), and replay mode rebuilds the submitted file byte for byte.
+I built this project with AI coding agents, which the competition rules allow (Rules §2.8.a.1(b)).
 
-The technical report describes every component, why it is there and what it contributes.
+- **What Claude did.** Claude, through Claude Code, wrote the code, ran the experiments, kept the experiment records
+  and put together this release. Separate Claude agents checked the work against those records. Codex, which I used
+  in the first weeks, built the data split, the copy of the competition metric, the early models and the I6 model.
+- **What I did.** I set the direction and approved the compute and data the work used. I chose which methods to
+  adopt (for example, the B3f selection rule, even though its pre-registered main test had failed), chose every
+  Kaggle submission and the final one, and made the judgment calls, such as keeping the 0.23 px shift. I also chose
+  how this release is reproduced and checked.
+- **How the results were checked.** Each step of this release was compared with the stored outputs of the run that
+  produced my submission (`tools/verify_*.py`), and replay mode rebuilds the submitted file byte for byte.
