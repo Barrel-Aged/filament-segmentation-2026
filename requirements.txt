@@ -1,0 +1,26 @@
+# Python 3.10 (the submission was produced with 3.10.6).
+# Versions are the ones that produced the submitted file. The CPU stages (5-10) ran with exactly these;
+# the GPU stages (2-4) ran with the torch, torchvision, timm and segmentation-models-pytorch versions below.
+#
+# torch with CUDA 12.8: install with
+#   pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu128
+# Without that index, pip installs the default torch 2.8.0 build for your platform, which also works on CPU.
+
+numpy==2.2.6
+scipy==1.15.3
+opencv-python-headless==5.0.0.93
+pillow==12.3.0
+pycocotools==2.0.11
+lightgbm==4.7.0
+scikit-learn==1.7.2
+joblib==1.6.0
+threadpoolctl==3.7.0
+
+torch==2.8.0
+torchvision==0.23.0
+timm==1.0.30
+segmentation-models-pytorch==0.6.0
+
+# For the demo notebook
+jupyter
+matplotlib

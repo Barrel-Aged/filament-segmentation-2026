@@ -3,3 +3,5 @@ weights/** -text
 *.part* -text
 *.joblib -text
 *.pt -text
+submission/*.csv -text
+*.npz -text
