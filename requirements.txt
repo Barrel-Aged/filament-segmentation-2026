@@ -22,5 +22,5 @@ timm==1.0.30
 segmentation-models-pytorch==0.6.0
 
 # For the demo notebook
-jupyter
-matplotlib
+jupyter==1.1.1
+matplotlib==3.10.9
