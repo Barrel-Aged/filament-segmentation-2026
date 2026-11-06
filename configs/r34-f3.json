@@ -1,0 +1,16 @@
+{
+ "cmd": "train",
+ "name": "r34-f3",
+ "fold": 3,
+ "arch": "unet",
+ "encoder": "resnet34",
+ "steps": 30000,
+ "bs": 8,
+ "crop": 512,
+ "warmup": 500,
+ "lr_enc": 0.0002,
+ "lr_dec": 0.001,
+ "workers": 6,
+ "seed": 0,
+ "n_train_images": 424
+}

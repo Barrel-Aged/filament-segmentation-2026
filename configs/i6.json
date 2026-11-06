@@ -1,0 +1,49 @@
+{
+  "_about": "Inference settings of the Codex track's I6 model (learned-ROI detector + ResNet18 U-Net refiner), read by filseg/i6.py. Values are copied from the Codex tree: configs/growth-4.json (G4 recipe) and configs/improvement-i6.json (I6 protocol, sha256 229ccdee0f0eea9af68eb584dd5b03818bfe5d1e018b7c2e1fbe0a0094f61f24), or from the literals of scripts/i6_candidates_gpu.py / src/filament/g4_data.py that equal them. Each '_from' names the source.",
+  "seed": 20261014,
+  "_seed_from": "configs/improvement-i6.json runtime.seed (i6_candidates_gpu.py L39 seed=20261014)",
+  "mask_threshold": 0.5,
+  "_mask_threshold_from": "configs/improvement-i6.json selection.mask_threshold (i6_candidates_gpu.py L22)",
+  "detector": {
+    "architecture": "torchvision fasterrcnn_resnet50_fpn_v2, box predictor replaced by FastRCNNPredictor(in_features, 2)",
+    "num_classes_built": 91,
+    "num_classes": 2,
+    "input": 1024,
+    "anchors": [16, 32, 64, 128, 256],
+    "aspect_ratios": [0.25, 1.0, 4.0],
+    "score_floor": 0.01,
+    "per_tile_nms": 0.7,
+    "detections_per_tile": 128,
+    "_from": "configs/growth-4.json detector.{anchors,aspect_ratios,input} (read at i6_candidates_gpu.py L51) and proposal.{score_floor,per_tile_nms,max_candidates} (literals at i6_candidates_gpu.py L49)"
+  },
+  "proposal": {
+    "tile_size": 1024,
+    "tile_starts": [0, 768, 1024],
+    "global_box_nms": 0.7,
+    "max_candidates": 128,
+    "_from": "configs/growth-4.json proposal.{tile_size,tile_starts,global_box_nms,max_candidates} (literals at i6_candidates_gpu.py L59-64)"
+  },
+  "refiner": {
+    "architecture": "ResNet18 U-Net (filament.gpu.model.ResNetUNet) with 2 input channels: raw, box hint",
+    "channels": 2,
+    "input": 512,
+    "context_factor": 1.5,
+    "minimum_context": 128,
+    "micro_batch": 2,
+    "_from": "configs/growth-4.json refiner.{inputs,input,context_factor,minimum_context,micro_batch} (literals at i6_candidates_gpu.py L47, L65; g4_data.py L30, L42-43)"
+  },
+  "weights": {
+    "detector": {
+      "file": "I6-detector-full-s20261014/weights.pt",
+      "sha256": "dd5e568bbbff8afaf7d52c2f60071f2b708529e04d13b28ea4596e8e59e0588d",
+      "model_digest": "b8fc5f7156bbb92dbc7f4058b72a78a18fc701ff3cf138724e5be37640ecc2ef"
+    },
+    "refiner": {
+      "file": "I6-refiner-full-s20261014/weights.pt",
+      "sha256": "c417acf9200f7c4d53fff1fb08270a2a3748e7720212f5282fbb210e33702d01",
+      "model_digest": "39515fba6af140ed18890555f442fe01c05a02317599b360f569d223187259e9"
+    },
+    "protocol_sha256": "229ccdee0f0eea9af68eb584dd5b03818bfe5d1e018b7c2e1fbe0a0094f61f24",
+    "_from": "runs/I6-{detector,refiner}-full-s20261014/run.json weights_sha256, model_digest, protocol_sha256 (checked at i6_candidates_gpu.py L42, L52-53)"
+  }
+}

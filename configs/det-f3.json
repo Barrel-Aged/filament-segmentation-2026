@@ -1,0 +1,17 @@
+{
+ "cmd": "train",
+ "name": "det-f3",
+ "fold": 3,
+ "iters": 12000,
+ "bs": 4,
+ "crop": 1024,
+ "lr": 0.01,
+ "warmup": 500,
+ "workers": 5,
+ "seed": 0,
+ "init": "",
+ "mask_only": false,
+ "mask56": false,
+ "target": "random",
+ "n_train_images": 424
+}
