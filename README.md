@@ -70,19 +70,22 @@ the rubric's Dice, IoU and relation distributions on the development images.
 
 ## Hardware and run time
 
-The steps of full mode add up to about 75 minutes on one RTX 3070 Ti (8 GB) with a 20-thread CPU. I timed each step in its own
-process, so this is a sum, not one continuous run. In one notebook run, Mask R-CNN was far slower (1,475 s on 8 images), and
-I haven't found out why:
+Full mode took about 83 minutes in one continuous notebook run on one RTX 3070 Ti (8 GB) with a 20-thread CPU:
 
 | Step | Time |
 |---|---|
-| Reading the images | 14 s |
-| U-Net maps (cnx, cnxL, R34) | 675 + 659 + 395 s |
-| Mask R-CNN, 4 folds | 1,154 s |
-| I6 | 656 s |
-| Candidates and evidence (4 processes) | 754 s |
-| Scoring and selection | 21 s |
-| Shift and CSV writing | 152 s |
+| Reading the images | 12 s |
+| U-Net maps (cnx, cnxL, R34) | 653 + 610 + 364 s |
+| Mask R-CNN, 4 folds | 1,417 s |
+| I6 | 705 s |
+| Candidates and evidence (4 processes) | 872 s |
+| Scoring and selection | 25 s |
+| Shift and CSV writing | 186 s |
+| Validation | 34 s |
+
+The Mask R-CNN folds took between 299 and 423 s each in that run. An earlier notebook run was much slower at this step
+(1,475 s on just 8 images), and I never found out why. GPU memory was almost full during this step (about 7.8 of 8 GB,
+counting what other programs on the PC were using), which may explain the uneven speed, but I haven't tested that.
 
 ## Training
 
