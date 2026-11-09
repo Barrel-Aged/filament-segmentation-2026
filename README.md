@@ -115,21 +115,31 @@ demo.ipynb  the end-to-end demo
   are derived from them.
 - The third-party libraries keep their own licenses (see `requirements.txt`).
 
-## Credits
+## Citations
 
-- Data: the MAGFiLO dataset and the GONG network of the U.S. National Solar Observatory.
-- Step 4's I6 model was built by Codex, an AI coding agent I used earlier in the project. `filseg/i6.py` is a trimmed
-  copy of that code, and its docstring lists the original files.
+The data come from the MAGFiLO dataset and the competition built on it:
 
-<!-- OWNER TO DO: the exact citations from the report template. -->
+1. Ahmadzadeh, A., et al. (2024). A dataset of manually annotated filaments from H-alpha observations. *Nature
+   Scientific Data* 11, 1031. https://doi.org/10.1038/s41597-024-03876-y
+2. Ahmadzadeh, A., Kempton, D. J., Li, Q., and Pevtsov, A. A. (2026). *Solar Filament Segmentation Challenge 2026*.
+   Kaggle. https://kaggle.com/competitions/filament-segmentation-2026
+
+This work uses GONG data obtained by the NSO Integrated Synoptic Program, managed by the National Solar Observatory,
+which is operated by the Association of Universities for Research in Astronomy (AURA), Inc. under a cooperative
+agreement with the National Science Foundation and with contribution from the National Oceanic and Atmospheric
+Administration. The GONG network of instruments is hosted by the Big Bear Solar Observatory, High Altitude
+Observatory, Learmonth Solar Observatory, Udaipur Solar Observatory, Instituto de Astrofísica de Canarias, and Cerro
+Tololo Interamerican Observatory.
 
 ## How I used AI tools
 
 I built this project with AI coding agents, which the competition rules allow (Rules §2.8.a.1(b)).
 
 - **What Claude did.** Claude, through Claude Code, wrote the code, ran the experiments, kept the experiment records
-  and put together this release. Separate Claude agents checked the work against those records. Codex, which I used
-  in the first weeks, built the data split, the copy of the competition metric, the early models and the I6 model.
+  and put together this release. Separate Claude agents checked the work against those records.
+- **What Codex did.** Codex, an AI coding agent I used in the first weeks, built the data split, the copy of the
+  competition metric, the early models and the I6 model. Step 4 (`filseg/i6.py`) is a trimmed copy of the I6 code,
+  and its docstring lists the original files.
 - **What I did.** I set the direction and approved the compute and data the work used. I chose which methods to
   adopt (for example, the B3f selection rule, even though its pre-registered main test had failed), chose every
   Kaggle submission and the final one, and made the judgment calls, such as keeping the 0.23 px shift. I also chose
