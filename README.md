@@ -30,7 +30,7 @@ Inference only reads the test H-alpha images. These are the steps, in the order 
 | 2 | Three U-Nets (ConvNeXt-T, a longer-trained ConvNeXt-T and ResNet34) each make a probability map. Each U-Net has 4 copies, one per training fold, and their maps are averaged. | `filseg/dense.py` | GPU, or CPU |
 | 3 | A Mask R-CNN detector, also 4 fold copies, proposes filament masks of its own. | `filseg/det.py` | GPU, or CPU |
 | 4 | A second detector (I6) finds filament regions and a small network refines their masks. | `filseg/i6.py` | GPU, or CPU |
-| 5 | The code builds the candidate masks from the U-Net maps and describes each one with 86 numbers ("evidence"): its shape, its brightness, and how well it agrees with the other maps and detectors. | `filseg/evidence.py`, `filseg/rows.py` | CPU |
+| 5 | The code builds the candidate masks from the U-Net maps and describes each one with 86 numbers ("evidence"): its shape, its brightness, and how well it agrees with the other maps and detectors. [`docs/features.md`](docs/features.md) lists all 86. | `filseg/evidence.py`, `filseg/rows.py` | CPU |
 | 6 | Ten LightGBM models and ten ExtraTrees models predict each candidate's expected IoU with the annotators. The score is 0.7 × the LightGBM average + 0.3 × the ExtraTrees average. | `filseg/score.py` | CPU |
 | 7 | For each image, an exact integer program picks the set of non-overlapping candidates with the highest total score. Each candidate's score is first adjusted: s = q − 0.2·\|t − 0.475\| − 0.03 for candidates that aren't plain blobs of the main map, where q is the predicted IoU and t the candidate's threshold level. Only candidates with s above τ = 0.24 can be picked. | `filseg/select.py` | CPU |
 | 8 | Each picked blob moves 0.23 pixels toward the top of the image, where the annotators' drawings sit on average (merged candidates stay as they are). Where two masks then touch, the higher-scoring one keeps the pixels. | `filseg/shift.py` | CPU |
@@ -98,6 +98,7 @@ tables from the networks' out-of-fold maps isn't part of this release.
 
 ```
 filseg/     the pipeline, one module per step
+docs/       features.md: what each of the 86 candidate features measures
 training/   training scripts; scorer_data/ holds the scorers' training tables
 configs/    settings of every trained model, and the data split
 weights/    the 38 trained model files, split into parts under 95 MB (filseg/weights.py joins them back)
