@@ -133,16 +133,12 @@ Tololo Interamerican Observatory.
 
 ## How I used AI tools
 
-I built this project with AI coding agents, which the competition rules allow (Rules §2.8.a.1(b)).
+I built this project with AI coding agents, which the competition rules allow (Rules §2.8.a.1(b)). I wish to be transparent that my use of AI agents may be more generous than the judges would prefer.
 
-- **What Claude did.** Claude, through Claude Code, wrote the code, ran the experiments, kept the experiment records
-  and put together this release. Separate Claude agents checked the work against those records.
-- **What Codex did.** Codex, an AI coding agent I used in the first weeks, built the data split, the copy of the
-  competition metric, the early models and the I6 model. Step 4 (`filseg/i6.py`) is a trimmed copy of the I6 code,
-  and its docstring lists the original files.
+- **What LLMs did.** Wrote the code, ran the experiments, kept the experiment records
+  and organized this release. Separate agents checked the work against those records. 
 - **What I did.** I set the direction and approved the compute and data the work used. I chose which methods to
-  adopt (for example, the B3f selection rule, even though its pre-registered main test had failed), chose every
-  Kaggle submission and the final one, and made the judgment calls, such as keeping the 0.23 px shift. I also chose
-  how this release is reproduced and checked.
+  adopt (for example, the B3f selection rule, even though its pre-registered main test had failed), chose the
+  Kaggle submissions, and made the judgment calls, such as keeping the 0.23 px shift. 
 - **How the results were checked.** Each step of this release was compared with the stored outputs of the run that
   produced my submission (`tools/verify_*.py`), and replay mode rebuilds the submitted file byte for byte.
