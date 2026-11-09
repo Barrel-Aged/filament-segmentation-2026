@@ -217,6 +217,8 @@ def main():
     log('RESULT', 'recorded digests ok' if rec_ok else 'recorded digests DIFFER', '|',
         'every compared array equal' if all_ok else 'DIFFERENCES FOUND')
     (work / 'verify_rows.log').write_text('\n'.join(_LOG) + '\n', encoding='utf-8')
+    if not (rec_ok and all_ok):
+        raise SystemExit(1)
 
 
 if __name__ == '__main__':

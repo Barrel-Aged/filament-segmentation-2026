@@ -1,0 +1,10 @@
+{
+  "local_gpu_allowed": false,
+  "ssh_target": "barrelaged@barrelagedworkflows-1",
+  "remote_os": "Linux",
+  "remote_hostname": "BarrelAgedWorkflows",
+  "remote_user": "barrelaged",
+  "remote_root": "/home/barrelaged/projects/filament-segmentation-2026",
+  "gpu_observed": "NVIDIA GeForce RTX 4070 SUPER",
+  "gpu_memory_mib_observed": 12282
+}

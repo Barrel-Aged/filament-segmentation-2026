@@ -20,8 +20,9 @@ Changes from the original run
 - ``select`` takes two optional arguments the original did not have. ``options`` is passed to ``milp``; the default
   None makes the same call as xcv.py:78-79 (HiGHS defaults, so the relative MIP gap tolerance is HiGHS's default, not
   0). ``results``, if given a list, receives every ``milp`` result so a caller can check the solver status and gap.
-- If ``milp`` returns no solution, ``select`` raises ``RuntimeError``; the original would fail with a ``TypeError``
-  on ``r.x``.
+- ``select`` raises ``RuntimeError`` unless ``milp`` reports status 0 (optimal). The original had no such check. It
+  would keep a feasible solution that was not proven optimal, and it would fail with a ``TypeError`` on ``r.x`` when
+  there was no solution.
 - ``save`` writes the per-image selections with the layout of the ``'S1'`` entry of the original ``sel_s1.pkl``
   (csv_score.py:114-122) to a path you choose; the provenance fields of that file (q707 and ET training-set hashes,
   note) are replaced by the sha256 of the scores file.
@@ -62,8 +63,8 @@ def _solve_component(w: np.ndarray, ea: np.ndarray, eb: np.ndarray, options: dic
              options=options)
     if results is not None:
         results.append(r)
-    if r.x is None:
-        raise RuntimeError(f"milp found no solution: {r.message}")
+    if r.status != 0:
+        raise RuntimeError(f"milp did not prove an optimal solution: status {r.status}, {r.message}")
     return r.x > 0.5
 
 

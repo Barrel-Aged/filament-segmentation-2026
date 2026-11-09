@@ -1,0 +1,104 @@
+{
+  "active": null,
+  "completed": [
+    {
+      "gpu": true,
+      "label": "I6-detector-full-s20261014",
+      "seconds": 5575.659333247226
+    },
+    {
+      "gpu": false,
+      "label": "I6-detector-full-s20261014-checkpoint",
+      "seconds": 5.006065414752811
+    },
+    {
+      "gpu": false,
+      "label": "I6-detector-full-s20261014-fit",
+      "seconds": 170.1700728791766
+    },
+    {
+      "gpu": true,
+      "label": "I6-refiner-full-s20261014",
+      "seconds": 2993.0669703269377
+    },
+    {
+      "gpu": false,
+      "label": "I6-refiner-full-s20261014-checkpoint",
+      "seconds": 5.005969286896288
+    },
+    {
+      "gpu": false,
+      "label": "I6-refiner-full-s20261014-fit",
+      "seconds": 170.17393538355827
+    },
+    {
+      "gpu": true,
+      "label": "I6-detector-full-s20261014-m0",
+      "seconds": 2792.8573607080616
+    },
+    {
+      "gpu": false,
+      "label": "I6-detector-full-s20261014-m0-checkpoint",
+      "seconds": 5.00631486158818
+    },
+    {
+      "gpu": false,
+      "label": "I6-detector-full-s20261014-m0-fit",
+      "seconds": 90.09408477181569
+    },
+    {
+      "gpu": true,
+      "label": "I6-refiner-full-s20261014-m0",
+      "seconds": 1501.5257839648984
+    },
+    {
+      "gpu": false,
+      "label": "I6-refiner-full-s20261014-m0-checkpoint",
+      "seconds": 5.006063582841307
+    },
+    {
+      "gpu": false,
+      "label": "I6-refiner-full-s20261014-m0-fit",
+      "seconds": 85.08748789597303
+    },
+    {
+      "gpu": true,
+      "label": "I6-detector-full-s20261014-m1",
+      "seconds": 2792.8442033920437
+    },
+    {
+      "gpu": false,
+      "label": "I6-detector-full-s20261014-m1-checkpoint",
+      "seconds": 5.006338411942124
+    },
+    {
+      "gpu": false,
+      "label": "I6-detector-full-s20261014-m1-fit",
+      "seconds": 85.0891856700182
+    },
+    {
+      "gpu": true,
+      "label": "I6-refiner-full-s20261014-m1",
+      "seconds": 1501.528834120836
+    },
+    {
+      "gpu": false,
+      "label": "I6-refiner-full-s20261014-m1-checkpoint",
+      "seconds": 5.006215934641659
+    },
+    {
+      "gpu": false,
+      "label": "I6-refiner-full-s20261014-m1-fit",
+      "seconds": 85.08818903425708
+    }
+  ],
+  "cpu_stage_seconds": 715.7399231274612,
+  "elapsed_seconds": 17873.3772108173,
+  "ended_utc": "2026-10-27T19:13:10.962021+00:00",
+  "gpu_stage_seconds": 17157.482485760003,
+  "owned_pid": null,
+  "peak_child_rss_bytes": 10253131776,
+  "protocol_sha256": "229ccdee0f0eea9af68eb584dd5b03818bfe5d1e018b7c2e1fbe0a0094f61f24",
+  "started_utc": "2026-10-27T14:15:17.584796+00:00",
+  "status": "complete"
+}

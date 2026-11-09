@@ -1,5 +1,7 @@
 """Rerun stages 1-3 (test images, dense maps, detector roots) and compare them with the original run's files.
 
+This tool reports differences and exits 0 even when it finds some, because small differences between GPUs are expected.
+
 usage (from the repository root; one stage per call, each appends to ``<work>/verify_gpu_stages.log``):
   python -m tools.verify_gpu_stages images  --original <claude tree> [--work DIR] [--data DIR]
   python -m tools.verify_gpu_stages dense   --original <claude tree> [--sources cnx,cnxL,r34] [--device cuda]

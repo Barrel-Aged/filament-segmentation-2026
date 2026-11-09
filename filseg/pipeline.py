@@ -306,6 +306,24 @@ def evaluate(csv_path, files, annotations) -> dict:
 
 # ---- the whole chain ----------------------------------------------------------------------------------------------
 
+def check_outcome(mode: str, checks_passed: bool, sha256: str) -> None:
+    """Report how a run ended, and raise ``RuntimeError`` if it failed.
+
+    A failed validation is an error in both modes. In replay mode the CSV must also be byte-identical to the submitted
+    file. In full mode the sha256 is expected to differ slightly, so this function only reports the comparison.
+    """
+    same = sha256 == SUBMITTED_SHA256
+    if mode == "replay":
+        print("MATCHES the submitted s1-S-t024.csv" if same else "DIFFERS from the submitted s1-S-t024.csv", flush=True)
+    else:
+        print(f"sha256 {sha256}: " + ("identical to the submitted s1-S-t024.csv" if same else
+              "differs from the submitted s1-S-t024.csv, which is expected in full mode"), flush=True)
+    if not checks_passed:
+        raise RuntimeError(f"The CSV failed validation in {mode} mode. The stage 10 lines above show which checks failed.")
+    if mode == "replay" and not same:
+        raise RuntimeError(f"Replay did not rebuild the submitted file: sha256 {sha256}, expected {SUBMITTED_SHA256}.")
+
+
 def run(mode="full", device="cuda", work=None, data=None, out_csv=None, image_dir=None, names=None,
         nproc=NPROC) -> dict:
     """Run the pipeline and write the submission CSV.
@@ -317,6 +335,9 @@ def run(mode="full", device="cuda", work=None, data=None, out_csv=None, image_di
     names: full mode only, a subset of the image file names (for example dev-fold training images);
     nproc: worker processes of stage 5 (at most 4).
     Returns {'csv', 'sha256', 'instances', 'checks_passed', 'matches_submitted', 'times'}.
+
+    The function raises ``RuntimeError`` if the CSV fails validation in either mode, or if replay mode does not rebuild
+    the submitted file byte for byte (see ``check_outcome``).
     """
     if mode not in ("full", "replay"):
         raise ValueError("mode must be 'full' or 'replay'")
@@ -348,7 +369,6 @@ def run(mode="full", device="cuda", work=None, data=None, out_csv=None, image_di
     TIMES["total"] = time.time() - t0
     same = res["sha256"] == SUBMITTED_SHA256
     print("\nstage times (s): " + " | ".join(f"{k} {v:.0f}" for k, v in TIMES.items()), flush=True)
-    if mode == "replay":
-        print("MATCHES the submitted s1-S-t024.csv" if same else "DIFFERS from the submitted s1-S-t024.csv", flush=True)
+    check_outcome(mode, ok, res["sha256"])
     return dict(csv=out_csv, sha256=res["sha256"], instances=res["instance_rows"], checks_passed=ok,
                 matches_submitted=same, times=dict(TIMES))

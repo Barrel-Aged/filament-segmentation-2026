@@ -1,0 +1,70 @@
+{
+ "view": "b3f707-t024-v1",
+ "code": {
+  "work/ideas8/b3f707/train707.py": "9607243f09f076f5216c8538c3394b365fa9914006a5d6678a48906a91a233e1",
+  "work/ideas8/b3f707/score707.py": "f5b238b82916c01eac56856773c92830804b2490d3bd28fdf015103cb172b41e",
+  "work/ideas8/b3f707/write707.py": "d7c8c5825bc95f6785dad70d32adb06fd28c4c410d07a59b56f837f3580fb2e9",
+  "work/ideas8/b3f707/verify707.py": "04f5bb570c6bdd6c9542b14f14e5b0609dcc712c3b4aea7ee374c7e1ae3c1346",
+  "work/ideas8/b3f707/manifest707.py": "7720c350e68719ddd8606d5a67a3d8c9ae9bf0a7ffb0c2734fedc6064a58c942"
+ },
+ "reused_code": {
+  "work/ideas8/bundle-test/score_select.py": "7f8e88eef103e5e2a6e8d60e1a23cba9c77eb771851f30f1e557ff13faa509e1",
+  "work/ideas8/bundle-test/bt_common.py": "07892a2c064406a8fb11533277a96d87a3b579247131355be95628bfc15e999f",
+  "work/ideas8/bundle-test/write_test.py": "d6c29263a4f2d572c43b21ba4e548194f17a29171c94e8ca39e337598d91525c",
+  "work/ideas8/bundle-hold/holdrows.py": "1b73b8617c2274fc1c521e01be537998d567224891467e47c30f01c4c8b397c5",
+  "work/ideas7/playbook/xcv.py": "222bbfae03259eab93addd2aedfc2af06e66fdfbfadfd312e0de2a530e70e1ea",
+  "work/ideas7/exp/p1_poolxm/run_arms.py": "46a0a2c6b540186a2b3bc83abd02d301d5bcb8ed79985338f324765d8f0cb433",
+  "work/ideas7/playbook/xcands2.py": "57928cec52e14f7baff576c0b6c67fa59b3104c15fbbee1ba58ac2d0a027c322",
+  "src/cfil/stack.py": "37860c4267a416d85857286a408e1af901700bf71832e85facecc7618fd0a33f",
+  "src/cfil/cands.py": "b6c4933c871cc9de452aa3e6bfb0207b39958f4e70840e5978f3c983af28cca7",
+  "src/filament/s1_submission.py": "34b4830869a9c0e841aca450c9a51fd6a61cac325ece27cf1b0552f0629ffaac"
+ },
+ "inputs": {
+  "configs/split-v2.json": "e85a98499b0e634a32edbbbcd2c6e8452918ce3de27ecb2953a815b13e8c6fc2",
+  "work/maps/final/testcnx.npy.json": "bf44bb94954d1d4e940fe16bc826edd18dbea1a66b0b5a850a3cf1282c06948c",
+  "work/maps/final/holdcnx.npy.json": "f73355bed72264fb183d77de815c4175e1aa39c3ce002332e5a97cc9424763cd",
+  "work/ideas8/bundle-test/test_q_combS.npz": "58a283cd69049f4e8742e333659c86827d44369a17c30afc47935320a59b589e",
+  "work/ideas8/bundle-test/test_sel.pkl": "c3fbca416af30f772af49abaaf0f67a5ac6c898689d566e10810bf35178bd29b",
+  "work/ideas8/bundle-test/b3f-t024.csv": "42bc62e3874a4efb77da01e3072a388ea7f3706867d9d7623c0d849c0e6a546b",
+  "work/sub/c2plus-xmRL-t030.csv": "873dd5aba46fc16aec0811f97b86dca0b78cd33e1ea829c2cc09e849813fedeb",
+  "work/ideas8/hold-read/models/combS_A_s10.txt": "d4d65231e6d922e68cb63f117af0adf7fb0f63e9e80405d76526f9f65424e9da",
+  "work/ideas8/bundle-hold/devcheck16.log": "6b780d8c8bae65d10e75988c865b9a41beb46e590130b0880c2f018fac1b9d6a"
+ },
+ "outputs": {
+  "work/ideas8/b3f707/b3f707-t024.csv": "09c0b0c435dfb3e77c416e59350999bb9578d3185ac2ac98e4811261ebc659b4",
+  "work/ideas8/b3f707/b3f707-t024.csv.json": "19a5f231f0e0b1b98d8556d6c5cee6cee835d9ab4eed5b8fde73ea0556225455",
+  "work/ideas8/b3f707/sel707.pkl": "62e12ea56ac9e2c82686ca0425a71d4b6ada5d58f141b829d38274c457bfc7a7",
+  "work/ideas8/b3f707/sel707.sha256": "11e120610ad53739a4c92464d8560fdc3e928fa44c2dc7cc8ee0a2c28da439eb",
+  "work/ideas8/b3f707/test_q707_combS.npz": "f598126083334b4affe447981c8bf16dedd79e3d66da759bd77de569aafe417e",
+  "work/ideas8/b3f707/colstats.json": "f2260ff4d1ec1f018600dfa4f5a5a14fc80f8e3ffe615fc566d7ab7e07e87a15",
+  "work/ideas8/b3f707/write707_summary.json": "019684b9d22bb4f5ee56e82c51d14f7a9f6928138c835f3e481ec0f06e1615f7",
+  "work/ideas8/b3f707/models/train_meta.json": "682982842ef849aedb0c9af257e0ff93b17b001c0e9ea00eb64f4a1653d07b08",
+  "work/ideas8/b3f707/models/combS707_s10.txt": "b8ecce73704fc7ebe621f9a3ba61cc08856aadfc2adcbf5cb9e2b27d7c7f299c",
+  "work/ideas8/b3f707/models/combS707_s11.txt": "308e067171fa1ecbecff22a3f39bc1bde6c44438638a27150da20dbc9dc8aee5",
+  "work/ideas8/b3f707/models/combS707_s12.txt": "74bda921827963d5ccc67bb098ee5afcff4660985130cd0e257703ed6c60e7c4",
+  "work/ideas8/b3f707/models/combS707_s13.txt": "539c0a019f27740986afc232c61ca2d18ee68e3070089351f62fdf76bbf76129",
+  "work/ideas8/b3f707/models/combS707_s14.txt": "7dc0c9e5c8030ef6faabbb1a73723a679e36dd736f4dcb913232ad8e2b5b7ad7",
+  "work/ideas8/b3f707/models/combS707_s15.txt": "8dc1aab20e7a6d07a03b8b0f9c7187197dfb5a5805f0260fe1511c0232a04fc9",
+  "work/ideas8/b3f707/models/combS707_s16.txt": "1406871cea16f86e48bdda554d497e95894bae02fe9b836a06b81a3e2d109bbc",
+  "work/ideas8/b3f707/models/combS707_s17.txt": "c2f045b055a9939b3b128677fcf0b6f24e85db71b4393ae3b5dd3260a2ab9a73",
+  "work/ideas8/b3f707/models/combS707_s18.txt": "f1cdc2ac48e7a9fd370e3ebe486c17b30515f73111fefacf548478c49a1a8912",
+  "work/ideas8/b3f707/models/combS707_s19.txt": "594208ff63563af4d15d5b5b2a28c43dc27eb4a8acf621b8bfc03b737723f756"
+ },
+ "row_sets": {
+  "work/ideas7/playbook/xcomb (dev, 566)": "f65a7fb265f2758e35269fdc0b1293bab7e37bd9509132fe119e9e275d9f592a",
+  "work/ideas7/exp/p1_poolxm/xm (dev, 566)": "c078e2ece100ee20ad503ae50e520d5ad988ddc77d49cada3e1bbe1454bd224f",
+  "work/ideas8/bundle-hold/rows (fold 4, 141)": "b9713fba9e754b1046eee003a84c3c52cc6df3dc8c788f975d96cb7910e4594b",
+  "work/ideas8/bundle-test/rows (test, 180)": "fcb0ca6dd01e7a4a3cb7144081399bdeb12da277872f0d953825ade07d566539"
+ },
+ "row_files_equal_upstream_manifest": {
+  "fold4": true,
+  "test": true
+ },
+ "packages": {
+  "python": "3.10.6",
+  "numpy": "2.2.6",
+  "scipy": "1.15.3",
+  "lightgbm": "4.7.0",
+  "pycocotools": "unknown"
+ }
+}

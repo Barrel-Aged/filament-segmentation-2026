@@ -119,7 +119,7 @@ def check_selection(orig: Path, tv: list[list[dict]], sc: dict, ref_q: dict, log
     ref = pickle.load(open(orig / "work/ideas11/synth/csv/sel_s1.pkl", "rb"))["sel"]["S1"]
     assert tuple(ref["cfg"]) == select.CFG
     subs, off = tv[0], sc["off"]
-    out = {}
+    out, failed = {}, []
     for tag, q, opts in (("release q, default HiGHS options", sc["q"], None),
                          ("release q, mip_rel_gap=0", sc["q"], {"mip_rel_gap": 0}),
                          ("original stored q, default HiGHS options", ref_q["q"], None)):
@@ -127,6 +127,8 @@ def check_selection(orig: Path, tv: list[list[dict]], sc: dict, ref_q: dict, log
         t0 = time.time()
         res = select.select_all(subs, score.per_image(q, off), opts, results)
         o, s, r = compare_sel(res, ref)
+        if (o, s, r) != (180, 180, 180):
+            failed.append(tag)
         fs = np.bincount(np.concatenate([im["fam"][res["sel_sub"][im["name"]]] for im in subs]).astype(np.int64),
                          minlength=7)
         log(f"selection [{tag}] vs sel_s1.pkl: images equal in order {o}/180, as sets {s}/180, sel_rows {r}/180 | "
@@ -137,6 +139,8 @@ def check_selection(orig: Path, tv: list[list[dict]], sc: dict, ref_q: dict, log
     a, b = out["release q, default HiGHS options"], out["release q, mip_rel_gap=0"]
     log(f"default options vs mip_rel_gap=0: same selection on "
         f"{sum(np.array_equal(a['sel_sub'][n], b['sel_sub'][n]) for n in a['sel_sub'])}/180 images")
+    if failed:
+        raise SystemExit(f"selection differs from the original run: {failed}")
     return a
 
 

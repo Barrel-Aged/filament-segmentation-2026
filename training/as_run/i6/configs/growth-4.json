@@ -1,0 +1,148 @@
+{
+  "comparison": "Complete recipe versus accepted G2B ResNet18 and F5, not isolated architecture/pretraining/pixel exposure. Two outer folds, one seed; no holdout/test. At least +.005 PQ, both folds positive, two-comparison-adjusted group-bootstrap lower bound positive; recall losses <=.05 small, .03 large, .03 limb against both references.",
+  "controls": {
+    "configs/growth-2-capacity.json": "e976461bde14cab166402a850e902301b0b983434d29a39426e7e6a8bda6e159",
+    "manifests/focus-5.json": "362159bb2912ed4ecff2b6853aad82c58bd375ef2e3a0ac6633ba6f76d52ab4b",
+    "manifests/growth-2.json": "f7392bb4f02f81541c6cf28aafcfb7649f955d1729c965e6274eb93e1dce1a24",
+    "manifests/growth-3.json": "b2b67aac073aa7bb4a17edbaadbb8c75397834549ae2eea995d25319d5c736b2",
+    "outputs/growth-2-capacity/analysis.json": "eaca0ee45950dc943de7cc4afc0e1e6d2e6f10e9fc5dad17bbe930549ff9a4c5"
+  },
+  "data_sha256": "95c12262c5d6dfd88baa7c609482ac47e47e025a40ea5a1b20e66fd7a71b99e0",
+  "decoder": {
+    "areas": [
+      16,
+      64
+    ],
+    "component": "max pixels inside predicted box, then area, then scan order",
+    "fixed": [
+      0.3,
+      0.5,
+      64
+    ],
+    "mask_nms_iou": 0.5,
+    "mask_thresholds": [
+      0.4,
+      0.5
+    ],
+    "ownership": "descending confidence with candidate order tie; remove accepted pixels then keep largest connected fragment",
+    "permissive": [
+      0.01,
+      0.5,
+      16
+    ],
+    "score": "detector probability times mean selected-component mask probability",
+    "score_thresholds": [
+      0.05,
+      0.15,
+      0.3,
+      0.5
+    ],
+    "selection": "final inner maximum official PQ, ties smaller area, mask nearest .5, confidence nearest .3, lower confidence; freeze both before any outer"
+  },
+  "detector": {
+    "anchors": [
+      16,
+      32,
+      64,
+      128,
+      256
+    ],
+    "aspect_ratios": [
+      0.25,
+      1.0,
+      4.0
+    ],
+    "batch_norm": "all running statistics frozen; affine parameters trained",
+    "effective_batch": 4,
+    "inner_steps": [
+      7500,
+      15000
+    ],
+    "input": 1024,
+    "learning_rate": 0.0001,
+    "micro_batch": 1,
+    "pretrained": "FasterRCNN_ResNet50_FPN_V2_Weights.COCO_V1",
+    "steps": 15000,
+    "trainable_backbone_layers": 5,
+    "warmup": 250
+  },
+  "folds": [
+    0,
+    1
+  ],
+  "frozen_utc": "2026-10-19T17:07:17.733199+00:00",
+  "milestone": "G4",
+  "optimizer": {
+    "amp": "bfloat16 without gradient scaler",
+    "determinism": "Fixed seeds; detector training CUDA ROIAlign backward may be nondeterministic. Exact separate-process inference required; no bit-exact training claim.",
+    "gradient_clip": 1.0,
+    "name": "AdamW",
+    "schedule": "warmup then cosine to 1% at fixed final update",
+    "weight_decay": 0.0001
+  },
+  "proposal": {
+    "gate": "both final inner folds before refiner quality training; if failed, one separately justified frozen remedy at most; no automatic tuning",
+    "gate_overall_box_iou_gt_0_5": 0.75,
+    "gate_small_box_iou_gt_0_5": 0.5,
+    "global_box_nms": 0.7,
+    "max_candidates": 128,
+    "per_tile_nms": 0.7,
+    "score_floor": 0.01,
+    "tile_size": 1024,
+    "tile_starts": [
+      0,
+      768,
+      1024
+    ]
+  },
+  "quality_gate": "Engineering proof and resource estimates must pass, and final config/source hashes must freeze before quality fits.",
+  "refiner": {
+    "box_center_jitter": 0.15,
+    "box_scale_jitter": [
+      0.8,
+      1.2
+    ],
+    "context_factor": 1.5,
+    "effective_batch": 8,
+    "inner_steps": [
+      15000,
+      30000
+    ],
+    "input": 512,
+    "inputs": [
+      "raw",
+      "box_hint"
+    ],
+    "labels": "one supplied selected instance; other instances excluded; negatives empty only relative to chosen supplied annotator",
+    "learning_rate": 0.001,
+    "loss": "BCE plus per-instance Dice",
+    "maximum_context": 2048,
+    "micro_batch": 2,
+    "minimum_context": 128,
+    "normalization": "both channels (x-.5)/.25; extra hint kernels initialized zero",
+    "positive_fraction": 0.75,
+    "steps": 30000,
+    "warmup": 0
+  },
+  "resources": {
+    "engineering_note": "Two70-update fixtures plus inference-only checks; unscored training-only engineering, discarded models.",
+    "engineering_updates_each": 70,
+    "engineering_updates_total": 140,
+    "fit_minutes": 240,
+    "free_disk_floor_gib": 85,
+    "gpu_stage_hours": 10,
+    "measured_training_projection_hours": 4.334939170939227,
+    "new_remote_gib": 5,
+    "new_windows_gib": 10
+  },
+  "retention": "Keep all new checkpoints and final weights; stream artifacts directly to Windows without duplicate Linux archives. No deletion of accepted artifacts. No G5 or competition submission.",
+  "runtime": {
+    "gpu_memory_fraction": 0.7,
+    "maximum_initial_gpu_utilization": 20,
+    "minimum_free_gpu_mib": 7000,
+    "seed": 20261014
+  },
+  "seed": 20261014,
+  "split_sha256": "99322a084a163d314cbb16cc3f1dbcca5427c8e46b263577114d4e8b8f653970",
+  "status": "frozen_prospective_quality_protocol"
+}

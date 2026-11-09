@@ -1,0 +1,3 @@
+# The release .gitignore skips folders named work/; these copies keep their original layout.
+!work/
+!work/**

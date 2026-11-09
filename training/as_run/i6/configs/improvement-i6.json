@@ -1,0 +1,138 @@
+{
+  "cell": "full-s20261014",
+  "created_utc": "2026-10-27T14:10:00.355204+00:00",
+  "deployment_only": true,
+  "freeze_policy": "Training sources freeze before quality fitting. Inference/selector/export sources freeze before OOF prediction or test processing. Selector hash freezes before test. No scientific setting changes from production outputs or public feedback.",
+  "git_parent": "5e8aa8ef51349d15e3beb609ff49a6b7b3358618",
+  "inputs": {
+    "checkpoints/pretrained/fasterrcnn_resnet50_fpn_v2_coco-dd69338a.pth": "dd69338a24b8d7381807e247652bdc356325bcbaf1cd3e092e00e0a1a58706bf",
+    "checkpoints/pretrained/resnet18-f37072fd.pth": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec",
+    "configs/compute.json": "2f4037385ba4716b8c11cce523a4dd35ae2685ffeff0890a9d967924309d6c3a",
+    "configs/growth-4.json": "f83cf06657a317c12d21194cc19de1ad8bba6b7cbe1d2f7c104ce8833b1f8a8b",
+    "configs/improvement-i5.json": "1fb0fd6cb6c4ecb296755d1e99543e4cc11bdd249e0f52df00201017092b8385",
+    "data/annotations/MAGFiLO_1.0_Annotations_kaggle2026_train.json": "5da9e92b5a1a1947fd5d57adb6688269625c48ec1ef884daf2a01618c9ed54a1",
+    "manifests/dataset-v1.json": "95c12262c5d6dfd88baa7c609482ac47e47e025a40ea5a1b20e66fd7a71b99e0",
+    "manifests/improvement-i5.json": "aef49a254b0a91c830baa63ddeaf0800371902fd2eee94d69162ed768b082ceb",
+    "manifests/improvement-i6-data.json": "0570c7c1b385c999e716f96de4018ed8d97aef6308cb51fae3c41b7de6e0155a",
+    "manifests/split-v2.json": "e85a98499b0e634a32edbbbcd2c6e8452918ce3de27ecb2953a815b13e8c6fc2",
+    "outputs/improvement-i5/f0-s20261014/mask-choice.json": "08de7df494d841f97099acb14a92b93c937f46fdade6a9e801bcab32131cbae6",
+    "outputs/improvement-i5/f0-s20261015/mask-choice.json": "4e071bb796501c5d557fe12fbd6e79093a462a7de3a8c6667c3ccd732e81138e",
+    "outputs/improvement-i5/f1-s20261014/mask-choice.json": "e98ae55701bb1e88d9d9991edcdda093f378c1577465342bb2e52719c8c9b1a8",
+    "outputs/improvement-i5/f1-s20261015/mask-choice.json": "e2b5a5aacaba9baf245d777fe8da080dca4d2ff76b3cfed4ea73ab8ad16783be",
+    "outputs/improvement-i5/f2-s20261014/mask-choice.json": "52940a0cf8b8a0802044b9fb9770459c34207cc38d544db5559b439b51879958",
+    "outputs/improvement-i5/f2-s20261015/mask-choice.json": "65520a569801c0f82f1b4b254831597e543ab4930bf14224585033733be11a75",
+    "outputs/improvement-i5/f3-s20261014/mask-choice.json": "e37c9aeaa76012fa091c48614e8957a04b0c80ab0d62bcf06f5203961912496e",
+    "outputs/improvement-i5/f3-s20261015/mask-choice.json": "6d2025939a27571646ada6327fc4f58fdf8e27f1fbef0afb72987ff60d6001f2",
+    "outputs/improvement-i5/final-delivery.json": "ef0568db665e932661fc23466893cffb1655d9a1daf9fd10170fdd126e8116d7",
+    "outputs/improvement-i5/outer-freeze.json": "bdfec5942d493694c828ed9399e9847ada381394cb1b96ec88474ec6a6a2477e",
+    "outputs/improvement-i6/decoder-selection.json": "b954ddac0813cd08969a2ba3289a858d9e411693237e45bf10f6c9012c26d8cb",
+    "outputs/improvement-i6/deployment-rule.json": "1f713df212c909bc26708f10f595464c80084f76afa6bf65b9cdc99600229f68",
+    "runs/G4-detector-f0-s20261014/run.json": "5cf48483f06bc72290d3251c50fb4042ef59b96b73d2810077c8846c35c02fd9",
+    "runs/G4-refiner-f0-s20261014/run.json": "f0b2653c4d063a9dd7247358844dfa5e8ad0870d55fc7064c42c291105647614",
+    "training/uv.lock": "6ad9eca7d2d76577a12aaf0c9226f9a71fdcf01f98b5dc7939783a9bc45bb83b",
+    "uv.lock": "19a92ce2021fa6ed3fd542c3196878b9da39e8fb9982c93b2e92d2e26de361b0"
+  },
+  "milestone": "I6",
+  "new_holdout_score": false,
+  "resources": {
+    "cpu_stage_hours": 6,
+    "fit_minutes": 150,
+    "free_disk_floor_gib": 85,
+    "gpu_stage_hours": 10,
+    "host_ram_gib": 24,
+    "new_remote_gib": 20,
+    "new_windows_gib": 25
+  },
+  "runtime": {
+    "gpu_memory_fraction": 0.7,
+    "maximum_initial_gpu_utilization": 20,
+    "minimum_free_gpu_mib": 7000,
+    "seed": 20261014
+  },
+  "seed": 20261014,
+  "selection": {
+    "cells": [
+      {
+        "cell": "f0-s20261014",
+        "confidence_threshold": 0.8,
+        "mask_threshold": 0.5
+      },
+      {
+        "cell": "f1-s20261014",
+        "confidence_threshold": 0.8,
+        "mask_threshold": 0.4
+      },
+      {
+        "cell": "f2-s20261014",
+        "confidence_threshold": 0.8,
+        "mask_threshold": 0.4
+      },
+      {
+        "cell": "f3-s20261014",
+        "confidence_threshold": 0.8,
+        "mask_threshold": 0.5
+      },
+      {
+        "cell": "f0-s20261015",
+        "confidence_threshold": 0.8,
+        "mask_threshold": 0.4
+      },
+      {
+        "cell": "f1-s20261015",
+        "confidence_threshold": 0.8,
+        "mask_threshold": 0.4
+      },
+      {
+        "cell": "f2-s20261015",
+        "confidence_threshold": 0.8,
+        "mask_threshold": 0.5
+      },
+      {
+        "cell": "f3-s20261015",
+        "confidence_threshold": 0.8,
+        "mask_threshold": 0.5
+      }
+    ],
+    "cluster_limit": 6,
+    "confidence_threshold": 0.8,
+    "margin": 0.02,
+    "mask_threshold": 0.5,
+    "minimum_area": 64,
+    "no_new_generalization_measurement": true,
+    "ridge_penalty": 0.01,
+    "rule_sha256": "1f713df212c909bc26708f10f595464c80084f76afa6bf65b9cdc99600229f68",
+    "transfer_limit": "Consensus of inner choices, not recalibration on test or full-fit training predictions.",
+    "utility_reference_pq": 0.35
+  },
+  "selector": {
+    "cluster_limit": 6,
+    "fit_only": "707 supplied train images from own group-excluded half-fit miners; no full-fit or test labels used for selector fitting",
+    "margin": 0.02,
+    "ridge_penalty": 0.01,
+    "utility_reference_pq": 0.35
+  },
+  "test": {
+    "all_image_separate_process_repeat": true,
+    "confidence_control": "Export and audit alongside selected arm; not submitted or selected using test appearance",
+    "images": 180,
+    "no_test_tuning": true,
+    "submit_recipe": "set_selector_pq",
+    "visual_export_names": [
+      "20170626133730Ch.jpeg",
+      "20140516234034Lh.jpeg",
+      "20130104104234Ch.jpeg"
+    ]
+  },
+  "training": {
+    "detector_steps": 15000,
+    "exposure_limit": "Same update budget as validation, lower per-image exposure in larger production pool; not claimed exposure-matched.",
+    "fits": 6,
+    "half_detector_steps": 7500,
+    "half_refiner_steps": 15000,
+    "initialization": "generic COCO detector and ImageNet refiner; no filament warm-start",
+    "refiner_steps": 30000,
+    "sample_occurrences": 600000,
+    "successful_updates": 90000
+  },
+  "user_authorized_one_submission": true
+}

@@ -20,7 +20,7 @@ So I stopped picking one threshold. The pipeline makes many candidate masks for 
 threshold level, plus merges of nearby blobs), a trained model predicts how well each candidate will match the
 annotators, and the code then picks the best set of candidates that don't overlap. That alone took the development
 score to 0.438. From there I gave the scorer more evidence about each candidate, namely what several other models
-think of it, and refined how the final set is chosen. The final model scores 0.4706 on the development images.
+think of it, and refined how the final set is chosen. A cross-fitted development version of the final recipe scores 0.4706. That's an estimate from the same images I used to make choices, not a clean holdout score, and the exact blend I submitted has no clean holdout score of its own. The technical report explains the limits.
 
 Inference only reads the test H-alpha images. These are the steps, in the order the code runs them:
 
@@ -65,7 +65,8 @@ The notebook has two modes.
   The ResNet34 maps, which were originally made on that same GPU, came out bit-for-bit identical.
   `tools/compare_csv.py` compares your file with the submitted one.
 
-`tools/verify_*.py` check each step against the stored outputs of the original run.
+`tools/verify_*.py` check each step against the stored outputs of the original run. [`docs/evaluation.md`](docs/evaluation.md) has
+the rubric's Dice, IoU and relation distributions on the development images.
 
 ## Hardware and run time
 
@@ -85,20 +86,24 @@ Full mode took about 75 minutes on one RTX 3070 Ti (8 GB) with a 20-thread CPU:
 
 `training/` has the training scripts (`prep_train.py`, `train_dense.py`, `train_det.py`), and `configs/` has the
 settings of every trained model. The notebook's training section is off by default, so the notebook loads the stored
-models. All the networks were trained on development folds 0-3. The folds are fixed groups of observation days, so
-images taken on the same day never end up in different folds. The technical report gives the split and every
+models. The 12 U-Nets and 4 Mask R-CNN models were trained on development folds 0-3 and never saw fold 4. The final I6
+models were trained on all 707 images. The folds are fixed groups of observation days, so images taken on the same
+day never end up in different folds. The technical report gives the split and every
 parameter.
 
 `training/scorer_data/` holds the two tables that the step-6 scorers were trained on (707 images for LightGBM, 566
 for ExtraTrees; see its README). `filseg.train.fit_scorers()` retrains all 20 scorer models from them on a CPU in a
-few minutes, and the retrained LightGBM files come out byte-identical to the shipped ones. The code that builds these
-tables from the networks' out-of-fold maps isn't part of this release.
+few minutes, and the retrained LightGBM files come out byte-identical to the shipped ones.
+
+The I6 training code and the code that built the scorers' training tables are in `training/as_run/`, copied byte for
+byte as they ran, with the order, commands, times and output hashes in its README. They contain paths and host checks
+from my setup, I haven't re-tested them in that folder, and the notebook and inference don't depend on them.
 
 ## What's in the repository
 
 ```
 filseg/     the pipeline, one module per step
-docs/       features.md: what each of the 86 candidate features measures
+docs/       features.md: the 86 candidate features; evaluation.md: Dice, IoU and relation distributions
 training/   training scripts; scorer_data/ holds the scorers' training tables
 configs/    settings of every trained model, and the data split
 weights/    the 38 trained model files, split into parts under 95 MB (filseg/weights.py joins them back)

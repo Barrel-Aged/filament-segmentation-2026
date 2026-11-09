@@ -11,8 +11,9 @@ What can be retrained, and what it costs
   26-30 GPU hours for all 16. Both trainers need CUDA (bf16 autocast) and download their pretrained starting
   weights (ImageNet encoders through timm / segmentation-models-pytorch, COCO Mask R-CNN through torchvision).
   Training is not bit-reproducible, so a retrained network differs from the shipped one.
-- The I6 detector and refiner (stage 4) were trained in the Codex track; their training code is not part of this
-  release.
+- The I6 detector and refiner (stage 4) were trained in the Codex track. There is no entry point here: the original
+  training scripts are in ``training/as_run/i6/`` exactly as they ran, not re-tested in that location (see
+  ``training/as_run/README.md``).
 - The candidate scorer (stage 6): 10 LightGBM and 10 ExtraTrees models (seeds 10-19). ``fit_lgbm`` and ``fit_et`` hold
   their exact recipes; on a desktop CPU each LightGBM model takes about 10 s (292,535 rows) and all 10 ExtraTrees
   about 90 s (148,711 rows). They are fit on labelled candidate rows: the 86 scorer columns of every candidate on the
@@ -20,8 +21,9 @@ What can be retrained, and what it costs
   the image's annotator records of the candidate's IoU with the ground-truth object it shares most pixels with
   (0 when that IoU is <= 0.5), and the weight w = the number of records. The two tables the shipped models were fit
   on are in ``training/scorer_data/`` (``lgbm_707.npz``, ``et_566.npz``; see its README); ``fit_scorers()`` reads
-  them by default. The code that builds such rows from scratch (the OOF map and label-matching steps) is not part
-  of this release.
+  them by default. The original scripts that built those rows from the images and annotations (the out-of-fold maps,
+  detector and I6 banks, evidence, targets and table assembly) are in ``training/as_run/scorer_tables/`` exactly as
+  they ran, not re-tested in that location (see ``training/as_run/README.md``).
 
 Usage (repository root on ``sys.path``):
     from filseg import train

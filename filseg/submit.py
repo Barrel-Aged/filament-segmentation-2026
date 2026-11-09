@@ -42,7 +42,7 @@ def image_instances(rows_file: Path, sel_rows: np.ndarray, idx: np.ndarray, q: n
     if not len(sel_rows):
         return []
     s_row = S.row_scores(q, idx, t32, fam)
-    finals = S.image_masks(sets, fam, lvl, sel_rows, s_row, own, counters=counters)
+    finals = S.image_masks(sets, fam, lvl, sel_rows, s_row, own, shift=shift, counters=counters)
     return [m for m in finals if m is not None]
 
 

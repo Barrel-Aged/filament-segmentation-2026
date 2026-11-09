@@ -38,14 +38,15 @@ that didn't train on it.
 - **Development images (folds 0-3).** Each image's U-Net maps and Mask R-CNN candidates come from the fold copy that
   didn't see that image's fold. The I6 numbers come from two I6 models trained on separate halves of the data, each
   image from the half that didn't include it.
-- **Fold-4 images.** No network trained on fold 4, so these images use the 4-copy averages, just like the test
-  images. Each fold-4 image appears four times, once per Mask R-CNN copy, at a quarter of the weight. Only the
+- **Fold-4 images.** No U-Net or Mask R-CNN trained on fold 4, so these images use the 4-copy averages, just like
+  the test images. Their I6 numbers come from the same two half-data I6 models, which did train on other observation
+  groups in fold 4, so fold 4 is clean per image but not untouched. Each fold-4 image appears four times, once per Mask R-CNN copy, at a quarter of the weight. Only the
   detector columns (45-61 and 63) differ between the four copies.
 
 Claude exported these files with the same loading code the original training used, and their hashes match the ones
 recorded at training time. Building tables like these from scratch needs the out-of-fold maps and detector outputs
-on the training images, plus the candidate, evidence and matching code for the training side. That code isn't part
-of this release.
+on the training images, plus the candidate, evidence and matching code for the training side. That code is in
+`training/as_run/scorer_tables/`, as it originally ran.
 
 ## Retraining check
 

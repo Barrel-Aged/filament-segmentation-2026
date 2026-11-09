@@ -1,5 +1,7 @@
 """Run the release I6 inference (stage 4) on the test images and compare its bank with the stored Codex bank.
 
+This tool reports differences and exits 0 even when it finds some, because small differences between GPUs are expected.
+
 usage (from the repository root):
   python -m tools.verify_i6 --stored <Codex outputs/improvement-i6/candidates/test> --original <claude tree>
                             [--image-dir DIR] [--work DIR] [--device cuda|cpu] [--limit N] [--nproc 4] [--skip-infer]

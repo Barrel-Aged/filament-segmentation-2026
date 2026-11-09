@@ -1,9 +1,12 @@
 """Check stages 6-9 end to end: rebuilt rows -> scores -> selection -> shifted CSV == the submitted s1-S-t024.csv.
 
 usage (repo root): python -m tools.verify_cpu_chain --rows <rows folder> --maps <folder with test{cnx,cnxL,r34}.npy>
+
+The script exits with code 1 if the rebuilt CSV differs from the submitted file.
 """
 import argparse
 import hashlib
+import sys
 import time
 from pathlib import Path
 
@@ -30,6 +33,8 @@ def main() -> None:
     r = submit.make_submission(a.rows, a.out / "scores.npz", a.out / "selection.pkl", a.maps, a.out / "submission.csv")
     print(f"submission: {r['instance_rows']} instances | sha256 {r['sha256']} | {time.time() - t0:.0f}s")
     print("MATCHES the submitted s1-S-t024.csv" if r["sha256"] == SUBMITTED else "DIFFERS from the submitted file")
+    if r["sha256"] != SUBMITTED:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
