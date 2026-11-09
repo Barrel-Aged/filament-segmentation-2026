@@ -70,7 +70,9 @@ the rubric's Dice, IoU and relation distributions on the development images.
 
 ## Hardware and run time
 
-Full mode took about 75 minutes on one RTX 3070 Ti (8 GB) with a 20-thread CPU:
+The steps of full mode add up to about 75 minutes on one RTX 3070 Ti (8 GB) with a 20-thread CPU. I timed each step in its own
+process, so this is a sum, not one continuous run. In one notebook run, Mask R-CNN was far slower (1,475 s on 8 images), and
+I haven't found out why:
 
 | Step | Time |
 |---|---|
@@ -104,6 +106,7 @@ from my setup, I haven't re-tested them in that folder, and the notebook and inf
 ```
 filseg/     the pipeline, one module per step
 docs/       features.md: the 86 candidate features; evaluation.md: Dice, IoU and relation distributions
+            settings.md: every training and inference setting
 training/   training scripts; scorer_data/ holds the scorers' training tables
 configs/    settings of every trained model, and the data split
 weights/    the 38 trained model files, split into parts under 95 MB (filseg/weights.py joins them back)
