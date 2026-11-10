@@ -8,7 +8,9 @@ during the competition, copied byte for byte. They are not a cleaned-up port.
 here. A judge doesn't need to run these scripts to reproduce the predictions.
 
 **I have not re-tested these scripts in this location.** They ran from my own project folders on my own machines. Claude
-copied them here on 2026-11-09 and checked that every copy is byte-identical to its original (`MANIFEST.tsv`). Claude did
+copied them here on 2026-11-09 and checked that every copy is byte-identical to its original (`MANIFEST.tsv`), with
+one exception: in the six `i6/runs/*/run.json` records I removed the path of an unrelated program from the list of
+other programs that were using the GPU, and `MANIFEST.tsv` holds the hashes of the edited files. Claude did
 not run any of them for this release.
 
 **The scripts contain paths and machine checks from my setup, and they stay as they were.** Expect these things:
@@ -36,12 +38,19 @@ wrote the scorer-table code in `scorer_tables/`.
 The folder also has a `.gitattributes` that keeps line endings unchanged, because 12 of the copies use Windows line endings
 and the release's own settings would otherwise rewrite them. Its `.gitignore` keeps the folders named `work/` tracked.
 
-Three kinds of file are left out on purpose:
+Five kinds of file are left out on purpose:
 
 - **Steps that don't feed these tables.** `i6_selector.py`, `i6_export.py` and their helpers built Codex's own I6
   submission, and my final pipeline doesn't use them. `i6_inference_campaign.py` still lists them as the later steps of
   its chain. Lines that call experiment scripts such as `work/exp_feat.py` and `src/cfil/avg_maps.py` are the same kind of
   thing, and those files aren't here either.
+- **Files the scripts check for before they start.** The two earlier run records
+  `runs/G4-{detector,refiner}-f0-s20261014/run.json` (the I6 training script compares its starting model with them),
+  four test files that the launcher runs first, and the I5-era files the inference freeze checks
+  (`scripts/i5_candidates_gpu.py`, `configs/enhancement-h2.json`, `manifests/improvement-i5-splits.json` and files
+  under `outputs/growth-6/`). You would have to remove those checks to run the scripts.
+- **The COCO starting weights for the detector.** The script expects them at
+  `checkpoints/pretrained/fasterrcnn_resnet50_fpn_v2_coco-dd69338a.pth`, which is torchvision's public file.
 - **Later checks.** `train707.py repro566` needs `score_select.py` from the test stage, and it is only a check.
 - **Codex's I5 result files and the wider source tree.** `prepare_i6.py` reads I5's result files for a threshold vote, and
   the vote's outcome is recorded in `i6/configs/improvement-i6.json`. Codex's `verify()` also re-hashes every file in the
@@ -139,7 +148,8 @@ LightGBM 4.7.0. The GPU library versions at the time of these runs weren't recor
 | 15 | Fit the 10 LightGBM models | `python -B work/ideas8/b3f707/train707.py fit` | Reconstructed | Windows CPU, 93 s |
 | 16 | Export the two tables | `python work/package/release_work/scorer_train/export_tables.py` | Reconstructed | Windows CPU, 19 s |
 
-Step 15 fits the models in `weights/models/`, and `filseg/train.py` can repeat it from the exported tables. Step 16 is what
+Step 15 fits the LightGBM models in `weights/models/`. The ExtraTrees models were fit by a separate short script that is
+not copied here, and `filseg.train.fit_et` is the same recipe. `filseg/train.py` can repeat both from the exported tables. Step 16 is what
 wrote the files in `training/scorer_data/`.
 
 ### Inputs and outputs of Part 2

@@ -23,7 +23,7 @@ numbers per candidate and its target.
   that, for the reason given below.
 - `image` (int32): which image each row belongs to, as an index into `names`. `names` and `folds` are per image.
 - `variant` (int8): which of the four detector copies a fold-4 row came from (0-3), or -1 for development rows.
-- `fam` (int8): the kind of candidate: 0 a blob of the main map, 2 a merge, 4 a cut, 5 a blob of the cnxL map, 6 a
+- `fam` (int8): the kind of candidate: 0 a blob of the main map, 2 a merge, 4 a bridged pair, 5 a blob of the cnxL map, 6 a
   blob of the R34 map.
 - `columns`: the names of the 86 numbers. `sha256_Xyw`: a hash of (X, y, w) recorded when the original models were
   trained. `load_scorer_table` checks it.

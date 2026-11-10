@@ -745,7 +745,7 @@
       "user": "barrelaged"
     },
     "memory_fraction_cap": 0.7,
-    "process_inventory": "854552, python3.13, 182 MiB\n855079, /root/film-lab/2026-10-09-animate2/venv/bin/python, 338 MiB\n2283590, training/.venv/bin/python, 278 MiB",
+    "process_inventory": "854552, python3.13, 182 MiB\n855079, [unrelated program, path removed], 338 MiB\n2283590, training/.venv/bin/python, 278 MiB",
     "torch": "2.8.0+cu128",
     "torchvision": "0.23.0+cu128",
     "training_deterministic_algorithms": false,

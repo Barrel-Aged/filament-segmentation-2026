@@ -4,7 +4,7 @@ Every candidate row (one row file per test image, written by stage 5) has a 74-c
 k = 0..3 (``F[k]``; the variants differ only in which of the four Mask R-CNN fold models gave the detector columns)
 and 18 cross-map columns (``xm``). The scorer sees 86 columns: ``F[k]`` plus 12 of the cross-map columns, namely the
 two dense maps the row did not come from (``xm_cols``). Only the rows of the "combS" pool are scored: tree rows
-(family 0) and the merge, cut, cnxL and R34 families (2, 4, 5, 6).
+(family 0) and the merge, bridged-pair, cnxL and R34 families (2, 4, 5, 6).
 
 q_L  : 10 LightGBM models (seeds 10-19, trained on 707 images). Per variant, the mean of the 10 models; then the mean
        of the 4 variants.
@@ -53,7 +53,7 @@ import numpy as np
 
 from filseg import paths, weights
 
-FAMILIES = (0, 2, 4, 5, 6)           # combS pool: tree, merge, cut, cnxL, R34
+FAMILIES = (0, 2, 4, 5, 6)           # combS pool: tree, merge, bridged pair, cnxL, R34
 FAMNAME = {0: "tree", 2: "mg", 4: "pm", 5: "cnxL", 6: "R34"}
 N_VARIANTS = 4
 N_COLUMNS = 86

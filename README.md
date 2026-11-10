@@ -20,7 +20,7 @@ So I stopped picking one threshold. The pipeline makes many candidate masks for 
 threshold level, plus merges of nearby blobs), a trained model predicts how well each candidate will match the
 annotators, and the code then picks the best set of candidates that don't overlap. That alone took the development
 score to 0.438. From there I gave the scorer more evidence about each candidate, namely what several other models
-think of it, and refined how the final set is chosen. A cross-fitted development version of the final recipe scores 0.4706. That's an estimate from the same images I used to make choices, not a clean holdout score, and the exact blend I submitted has no clean holdout score of its own. The technical report explains the limits.
+think of it, and refined how the final set is chosen. A cross-fitted development version of the final recipe scores 0.4706. That's an estimate from the same images I used to make choices, not a clean holdout score, and the exact blend I submitted has no clean holdout score of its own. The technical report explains the limits. I also checked what each part is worth by removing it and refitting the scorer. Every part helps a little, and a pipeline with one U-Net and one detector scores about 0.008 lower on my development images. The table is in the report.
 
 Inference only reads the test H-alpha images. These are the steps, in the order the code runs them:
 
@@ -57,7 +57,9 @@ The notebook has two modes.
 - **Replay mode (the default) rebuilds the submitted file exactly.** The `replay/` folder holds the outputs of steps
   2-4 from the run that produced my submission (98 MB). The notebook checks every file's hash, runs steps 5-10 on
   them and writes a CSV that is byte-for-byte identical to `submission/s1-S-t024.csv`. This needs only a CPU and
-  takes about 20 minutes.
+  takes about 17 minutes on a desktop CPU with 4 worker processes. I have checked this on one Windows PC only. On
+  another system a library may round differently and change a few masks. If that happens, `tools/compare_csv.py`
+  shows how close your file is.
 - **Full mode runs every step from the test images.** Steps 2-4 then run on your own GPU. Different GPUs do
   floating-point math slightly differently, and the U-Nets and I6 run in reduced precision (bfloat16), so you get a
   very close copy rather than the same bytes. When I ran full mode on an RTX 3070 Ti, 1,203 of the 1,206 submitted
@@ -65,7 +67,9 @@ The notebook has two modes.
   The ResNet34 maps, which were originally made on that same GPU, came out bit-for-bit identical.
   `tools/compare_csv.py` compares your file with the submitted one.
 
-`tools/verify_*.py` check each step against the stored outputs of the original run. [`docs/evaluation.md`](docs/evaluation.md) has
+`tools/verify_cpu_chain.py` reruns steps 5-10 and checks the result against the submitted file, and you can run it
+from this repository. The other `tools/verify_*.py` scripts compare each step with the files of my original run,
+which are not in this repository. They are here to show how each step was checked. [`docs/evaluation.md`](docs/evaluation.md) has
 the rubric's Dice, IoU and relation distributions on the development images.
 
 ## Hardware and run time
@@ -93,15 +97,16 @@ counting what other programs on the PC were using), which may explain the uneven
 settings of every trained model. The notebook's training section is off by default, so the notebook loads the stored
 models. The 12 U-Nets and 4 Mask R-CNN models were trained on development folds 0-3 and never saw fold 4. The final I6
 models were trained on all 707 images. The folds are fixed groups of observation days, so images taken on the same
-day never end up in different folds. The technical report gives the split and every
-parameter.
+day never end up in different folds. The technical report gives the split, and
+[`docs/settings.md`](docs/settings.md) lists every setting.
 
 `training/scorer_data/` holds the two tables that the step-6 scorers were trained on (707 images for LightGBM, 566
 for ExtraTrees; see its README). `filseg.train.fit_scorers()` retrains all 20 scorer models from them on a CPU in a
 few minutes, and the retrained LightGBM files come out byte-identical to the shipped ones.
 
 The I6 training code and the code that built the scorers' training tables are in `training/as_run/`, copied byte for
-byte as they ran, with the order, commands, times and output hashes in its README. They contain paths and host checks
+byte as they ran (except for one path I removed from six run records), with the order, commands, times and output
+hashes in its README. They contain paths and host checks
 from my setup, I haven't re-tested them in that folder, and the notebook and inference don't depend on them.
 
 ## What's in the repository
@@ -118,6 +123,9 @@ tools/      checking and packaging scripts
 submission/ the submitted s1-S-t024.csv, for comparison
 demo.ipynb  the end-to-end demo
 ```
+
+Many module docstrings have a "Changes from the original run" section. It lists how the released code differs from
+the scripts that made the submission, and the file names in it refer to my private working folder.
 
 ## License and data
 
@@ -147,8 +155,9 @@ Tololo Interamerican Observatory.
 
 I built this project with AI coding agents, which the competition rules allow (Rules §2.8.a.1(b)). I wish to be transparent that my use of AI agents may be more generous than the judges would prefer.
 
-- **What LLMs did.** Wrote the code, ran the experiments, kept the experiment records
-  and organized this release. Separate agents checked the work against those records. 
+- **What the AI agents did.** Claude (through Claude Code) for most of the project, and Codex, earlier on, for the
+  data split and the I6 model. They wrote the code, ran the experiments, kept the experiment records and organized
+  this release. Separate agents checked the work against those records.
 - **What I did.** I set the direction and approved the compute and data the work used. I chose which methods to
   adopt (for example, the B3f selection rule, even though its pre-registered main test had failed), chose the
   Kaggle submissions, and made the judgment calls, such as keeping the 0.23 px shift. 
